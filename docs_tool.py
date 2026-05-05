@@ -27,6 +27,7 @@ def append_to_doc(doc_id: str, content: str):
     """
 
     try:
+        logger.info("=== VERSION 2.0: DEPLOYED ===")
         logger.info(f"Starting append_to_doc for doc_id={doc_id}")
 
         # -------- INPUT VALIDATION -------- #

@@ -126,6 +126,7 @@ def create_email_draft(to: str, subject: str, body: str):
 
 def send_email(to, subject, body):
     try:
+        logger.info("=== VERSION 2.0: DEPLOYED ===")
         from auth import get_creds; from googleapiclient.discovery import build; from gmail_tool import create_message
         creds = get_creds(); service = build('gmail', 'v1', credentials=creds)
         message = create_message(to, subject, body)
