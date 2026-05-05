@@ -15,7 +15,11 @@ def get_creds():
     # 1. Load from Environment Variable (for Render)
     env_token = os.environ.get("GOOGLE_TOKEN_JSON")
     if env_token:
-        creds = Credentials.from_authorized_user_info(json.loads(env_token), SCOPES)
+        token_data = json.loads(env_token)
+        # Fix for empty expiry strings which cause crashes
+        if token_data.get("expiry") == "":
+            token_data.pop("expiry")
+        creds = Credentials.from_authorized_user_info(token_data, SCOPES)
     # 2. Fallback to local file
     elif os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
