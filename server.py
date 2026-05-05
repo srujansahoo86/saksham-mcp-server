@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from docs_tool import append_to_doc
-from gmail_tool import create_email_draft
+from gmail_tool import send_email
 
 # Re-create credentials.json from environment variable for Google libraries
 if os.environ.get("GOOGLE_CREDENTIALS_JSON"):
@@ -78,8 +78,8 @@ def list_tools():
             "description": "Append content to Google Doc"
         },
         {
-            "name": "create_email_draft",
-            "description": "Create Gmail draft"
+            "name": "send_email",
+            "description": "Send Gmail directly"
         }
     ]
 
@@ -114,29 +114,29 @@ def run_append(data: AppendDocInput):
 
 
 # ---------------- EMAIL TOOL ---------------- #
-@app.post("/create_email_draft")
+@app.post("/send_email")
 def run_email(data: EmailInput):
     try:
-        logger.info("Received request for create_email_draft")
+        logger.info("Received request for send_email")
 
-        if not approve("create_email_draft", data.dict()):
+        if not approve("send_email", data.dict()):
             return {
                 "status": "rejected",
                 "message": "User rejected the action"
             }
 
-        result = create_email_draft(
+        result = send_email(
             to=data.to,
             subject=data.subject,
             body=data.body
         )
 
-        logger.info("create_email_draft executed successfully")
+        logger.info("send_email executed successfully")
 
         return result
 
     except Exception as e:
-        logger.error(f"Error in create_email_draft: {e}")
+        logger.error(f"Error in send_email: {e}")
         raise HTTPException(
             status_code=500,
             detail=str(e)

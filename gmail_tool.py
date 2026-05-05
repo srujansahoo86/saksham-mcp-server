@@ -123,3 +123,13 @@ def create_email_draft(to: str, subject: str, body: str):
             "message": "Unexpected error occurred",
             "details": str(e)
         }
+
+def send_email(to, subject, body):
+    try:
+        from auth import get_creds; from googleapiclient.discovery import build; from gmail_tool import create_message
+        creds = get_creds(); service = build('gmail', 'v1', credentials=creds)
+        message = create_message(to, subject, body)
+        sent_message = service.users().messages().send(userId='me', body=message).execute()
+        return {'status': 'success', 'message': 'Email sent', 'message_id': sent_message.get('id')}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
