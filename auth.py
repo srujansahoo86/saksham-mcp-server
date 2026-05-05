@@ -17,9 +17,9 @@ def get_creds():
     if env_token:
         token_data = json.loads(env_token)
         # Bypassing the 'empty expiry' crash by injecting a dummy future date
-        # This allows the library to load the token and then refresh it automatically
+        # Using the exact format: %Y-%m-%dT%H:%M:%S
         if not token_data.get("expiry") or token_data.get("expiry") == "":
-            token_data["expiry"] = "2099-01-01T00:00:00Z"
+            token_data["expiry"] = "2099-01-01T00:00:00"
         creds = Credentials.from_authorized_user_info(token_data, SCOPES)
     # 2. Fallback to local file
     elif os.path.exists("token.json"):
