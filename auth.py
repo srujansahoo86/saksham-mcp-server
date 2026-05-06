@@ -16,11 +16,16 @@ def get_creds():
     env_token = os.environ.get("GOOGLE_TOKEN_JSON")
     if env_token:
         token_data = json.loads(env_token)
-        # Bypassing the 'empty expiry' crash by injecting a dummy future date
-        # Using the exact format: %Y-%m-%dT%H:%M:%S
-        if not token_data.get("expiry") or token_data.get("expiry") == "":
-            token_data["expiry"] = "2099-01-01T00:00:00"
-        creds = Credentials.from_authorized_user_info(token_data, SCOPES)
+        # Manually reconstruct Credentials to bypass the broken 'expiry' check entirely
+        from google.oauth2.credentials import Credentials as GoogleCreds
+        creds = GoogleCreds(
+            token=token_data.get("token"),
+            refresh_token=token_data.get("refresh_token"),
+            token_uri=token_data.get("token_uri"),
+            client_id=token_data.get("client_id"),
+            client_secret=token_data.get("client_secret"),
+            scopes=SCOPES
+        )
     # 2. Fallback to local file
     elif os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
